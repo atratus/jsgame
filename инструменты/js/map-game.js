@@ -1,0 +1,96 @@
+$(function() {
+    var left=0;
+    var chips = $(".chip")
+    var mapbox = $('.mapbox')
+    var dices = $('.dices')
+    var chipSize = {
+        "height":chips.height(),//*91,
+        "width":chips.width()//247
+    }
+
+    function resize() {
+        var ratio = Coords.ratio()
+        
+        var mapWidth = mapSize.width*ratio
+        var mapHeight = mapSize.height*ratio
+        mapbox.css({"width": mapWidth + "px ", "height": mapHeight + "px"})
+        
+        chips.css({"width": chipSize.width*ratio + "px ", "height": chipSize.height*ratio + "px"})
+        
+        chips.each(function(i){
+            var mapPosition = mapbox.position()
+            console.log(">lastRelX =" + this.lastRelX + "lastRelY=" + this.lastRelY)
+            $(this).css({
+                "left":Coords.fromRelX(this.lastRelX) + "px",
+                "top": Coords.fromRelY(this.lastRelY) + "px"})
+        })
+        
+
+        dices.css({"left": Coords.fromRelX(dicesSettings.xRel) + "px ",
+                    "top": Coords.fromRelY(dicesSettings.yRel) + "px",
+                   "width": dicesSettings.width*ratio + "px ",
+                  "height": dicesSettings.height*ratio + "px"})
+    }
+        
+    // Initialize
+    $(window).resize(resize)
+    $.each(snapPoints, function(idx, snapPoint) {
+        $('.main').append('<div class="chipHook" style="left:' + snapPoint.x + 'px;top:' + snapPoint.y + 'px;">');
+    });
+
+    // Chips extension
+    chips.each(function() {
+        $.extend(this, {
+            "relX":function() {
+                var pos = $(this).position()
+                return Coords.toRelX(pos.left)
+            },
+            "relY":function() {
+                var pos = $(this).position()
+                return Coords.toRelY(pos.top)
+            }
+        })
+    })
+    
+    // Chips behavior
+    chips.draggable({
+        "snap":'.chipHook',
+        "stop":function() {
+            this.lastRelX = this.relX()
+            this.lastRelY = this.relY()
+        }
+    });
+    
+    // Dices behavior
+    dices.click(function(){
+        console.log('die=' + window.activeDie)
+        if(typeof window.activeDie == 'undefined') {
+            $(".curtain").hide()
+            var diesElements = $(".die")
+            var dieIDX = Math.floor((Math.random() * diesElements.size()))
+            window.activeDie = $(diesElements[dieIDX])
+            window.activeDie.fadeIn()
+            setTimeout(function(){
+                
+                window.activeDie.fadeOut(function() {
+                    window.activeDie = undefined
+                    $(".curtain").show()
+                })
+            }, dicesSettings.timeout)
+        }
+    })
+
+    // Chips position    
+    var ratio = Coords.ratio()
+    console.log("Ratio = " + ratio)
+    chips.each(function(i) {
+        this.relWidth = chipSize.width*MAX_X_REL/mapSize.width
+        this.relHeight = chipSize.height*MAX_Y_REL/mapSize.height
+        this.lastRelX = MAX_X_REL - chipsSettings.homeMarginRight -
+            this.relWidth*(i+1)
+        this.lastRelY = MAX_Y_REL - chipsSettings.homeMarginBottom - 
+            this.relHeight
+    })
+    resize()
+});
+
