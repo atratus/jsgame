@@ -11,11 +11,34 @@ var chipsSettings = {
     "homeMarginBottom" : 1
 }
 var dicesSettings = {
-    "xRel":1,
-    "yRel":1,
-    "height":110,
-    "width":110,
-    "timeout":3000
+    "dices": {
+	    "xRel":1,
+	    "yRel":1,
+	    "height":110,
+	    "width":110,
+	    "timeout":3000
+	},
+	"weapons": {
+	    "xRel":1,
+	    "yRel":5,
+	    "height":210,
+	    "width":210,
+	    "timeout":3000
+	},
+	"tools": {
+	    "xRel":1,
+	    "yRel":12,
+	    "height":210,
+	    "width":210,
+	    "timeout":3000
+	},
+	"artefacts": {
+	    "xRel":1,
+	    "yRel":19,
+	    "height":210,
+	    "width":210,
+	    "timeout":3000
+	}
 }
 var backgroundSize = {
 	"left":0,

@@ -16,7 +16,7 @@ $(function() {
         var mapWidth = mapSize.width*ratio
         var mapHeight = mapSize.height*ratio
         mapbox.css({"width": mapWidth + "px ", "height": mapHeight + "px",
-        "left":(mapSize.left*ratio) + "px", "top":(mapSize.top*ratio) + "px"})
+        	"left":(mapSize.left*ratio) + "px", "top":(mapSize.top*ratio) + "px"})
         
         
         background.css({
@@ -34,10 +34,14 @@ $(function() {
         })
         
 
-        dices.css({"left": Coords.fromRelX(dicesSettings.xRel) + "px ",
-                    "top": Coords.fromRelY(dicesSettings.yRel) + "px",
-                   "width": dicesSettings.width*ratio + "px ",
-                  "height": dicesSettings.height*ratio + "px"})
+        dices.each(function() {
+            var id=$(this).attr("id")
+            console.log("id=" + id)
+            $(this).css({"left": Coords.fromRelX(dicesSettings[id].xRel) + "px ",
+                    "top": Coords.fromRelY(dicesSettings[id].yRel) + "px",
+                    "width": dicesSettings[id].width*ratio + "px ",
+                    "height": dicesSettings[id].height*ratio + "px"})
+        })
     }
         
     // Initialize
@@ -67,26 +71,32 @@ $(function() {
             this.lastRelX = this.relX()
             this.lastRelY = this.relY()
         }
-    });
+    })
     
     // Dices behavior
-    dices.click(function(){
-        console.log('die=' + window.activeDie)
-        if(typeof window.activeDie == 'undefined') {
-            $(".curtain").hide()
-            var diesElements = $(".die")
-            var dieIDX = Math.floor((Math.random() * diesElements.size()))
-            window.activeDie = $(diesElements[dieIDX])
-            window.activeDie.fadeIn()
-            setTimeout(function(){
-                
-                window.activeDie.fadeOut(function() {
-                    window.activeDie = undefined
-                    $(".curtain").show()
-                })
-            }, dicesSettings.timeout)
-        }
-    })
+    dices.each(function() {
+    	var id=$(this).attr("id")
+    	var diesElements = $(this).children()
+        $(this).click(function(){
+        	var dsettings = dicesSettings[id]
+	        console.log('die=' + dsettings.activeDie)
+	        if(typeof dsettings.activeDie == 'undefined') {
+	        	var curtain = $("#"+id+" > .curtain")
+	            curtain.hide()
+	            
+	            var dieIDX = Math.floor((Math.random() * diesElements.size()))
+	            dsettings.activeDie = $(diesElements[dieIDX])
+	            dsettings.activeDie.fadeIn()
+	            setTimeout(function(){
+	                
+	                dsettings.activeDie.fadeOut(function() {
+	                    dsettings.activeDie = undefined
+	                    curtain.show()
+	                })
+	            }, dsettings.timeout)
+	        }
+    	})
+	})
 
     // Chips position    
     var ratio = Coords.ratio()
